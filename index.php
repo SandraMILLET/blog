@@ -2,18 +2,14 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <meta charset="utf-8" />
     <title>blog</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 </head>
 
-
 <body>
-
     <div class="sizing" style="width:33%;margin:0 auto;">
         <form method="post" action="blog_post.php">
             <div class="form-group">
@@ -23,57 +19,48 @@
             <div class="form-group">
                 <label>Description de l'article</label>
                 <input type="text" class="form-control" placeholder="Description" name="description">
-            </div>
-            <div>
-            <button type="submit" class="btn btn-success mb-2" name="envoyer">Créer</button>
-            <button type="edit" class="btn btn-primary mb-2" name="editer">Editer</button>
-            <button type="delete" class="btn btn-warning mb-2" name="delete" >Supprimer</button>
+                <button type="submit" class="btn btn-primary mb-2" name="envoyer">Créer un article</button>
             </div>
         </form>
     </div>
+    <div class="card">
+        <div class="card-body">
 
+            <?php
+    require('database.php'); //include for getAllPosts method in database.php !!
 
-   <?php
+    $posts = getAllPosts();
+    //var_dump($posts);
+    $req = $db->query('SELECT * FROM posts ORDER BY id DESC');
 
+    if ($posts) {
 
-include('database.php');
-echo "Tout est validé";
-$bdd=connectbdd();
-$reponse = $bdd->query('SELECT * FROM posts ORDER BY ID DESC LIMIT 0, 5');
-
-
-
-while ($donnees = $reponse->fetch())
-{
-	echo '<br><strong>'.htmlspecialchars($donnees['titre']).'</strong>';
-	echo ' : '.htmlspecialchars($donnees['description']).'<br>';
-
-}
-
-$reponse->closeCursor();
-
-?>
-<div class="sizing" style="width:33%;margin:0 auto;">
-        <form method="post" action="database.php">
-            <div class="form-group">
-                <label>Delete de l'article</label>
-                <input type="text" class="form-control" placeholder="Delete" name="id">
-            </div>
-            <div>
-            <button type="delete" class="btn btn-warning mb-2" name="delete" >Supprimer</button>
-            </div>
-        </form>
+        while ($donnees = $req->fetch()){
+        echo '
+        <div class="card">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-1">
+                        <div class="card-body">
+                            <span class="badge badge-pill badge-info">'.$donnees['id'].'</span>
+                        </div>
+                    </div>
+                        <div class="col-sm-4">'.$donnees['title'].'</div>
+                        <div class="col-sm-5">'.$donnees['content'].'</div>
+                        <div class="col-sm-2"><a href="deletePost();" class="btn btn-danger">Supprimer</a> 
+                        <a href="" class="btn btn-primary">Editer</a></div>
+                    </div>
+                </div>
+            </div>';
+        }    
+    } 
+    
+    else {
+        echo '<span class="badge badge-danger">Pas encore de post en database !</span>';
+    }
+    ?>
+        </div>
     </div>
-
-
-   <?php
-    include('database.php');
-echo "Cela a été supprimé";
-$bdd=deletepost();
-$reponse = $bdd->query("DELETE from posts where id=" . $_POST['id']);
-header('Location: index.php');
-
-?>
 </body>
 
 </html>
